@@ -1,0 +1,74 @@
+const int BStart = 2;
+const int BStop = 3;
+
+const int ledStart = 8;
+const int ledStop = 9;
+
+unsigned long startTime = 0;
+unsigned long elapsedTime = 0;
+bool corre = false;
+
+void setup() {
+  Serial.begin(9600);
+  
+  pinMode(BStart, INPUT_PULLUP);
+  pinMode(BStop, INPUT_PULLUP);
+
+  pinMode(ledStart, OUTPUT);
+  pinMode(ledStop, OUTPUT);
+}
+
+void loop() {
+  
+  if (digitalRead(BStart) == LOW) {
+    
+  
+    if (!corre) {
+      startTime = millis() - elapsedTime;
+      corre = true;
+      digitalWrite(ledStop, LOW);
+      delay(10);
+ 
+    }
+  }
+
+  
+  if (digitalRead(BStop) == LOW) {
+    if (corre) {
+      elapsedTime = millis() - startTime;
+      corre = false;
+      digitalWrite(ledStart, LOW);
+      digitalWrite(ledStop, HIGH);
+      delay(10);
+    }
+  }
+  
+  //inicio luz
+  if(corre==true){
+  if(digitalRead(BStart) == HIGH) {
+    digitalWrite(ledStart, HIGH);
+      delay(1000);
+    digitalWrite(ledStart, LOW);
+      delay(1000);
+  }
+  }
+ 
+  //fin luz
+  
+  if (corre) {
+    elapsedTime = millis() - startTime;
+  }
+
+unsigned long totalSeg = elapsedTime / 1000;
+
+int hours = totalSeg / 3600;
+int minutes = (totalSeg % 3600) / 60;
+int seconds = totalSeg % 60;
+
+char buffer[9]; 
+sprintf(buffer, "%02d:%02d:%02d", hours, minutes, seconds);
+
+Serial.print("Tiempo transcurrido: ");
+Serial.println(buffer);
+}
+//cronometro
